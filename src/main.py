@@ -11,28 +11,35 @@ def main():
     # Start by configuring the options
     if custom:
         # Initialize game with given parameters
-        print("Input board width: ")
-        width = get_input(int, "width")
-        print("Input board height: ")
-        height = get_input(int, "height")
+        print("\033[2J\033[H", end="") # Clear terminal
+        width = get_input("Input board height: ", int, "width")
+        height = get_input("Input board height: ", int, "height")
         Game = C4Game(width, height)
     else:
         Game = C4Game()
 
-    # run the game loop
+    # run the game loop    
     while True:
         # Try to place
-
-        
+        print("\033[2J\033[H", end="") # Clear terminal
+        print("")
+    
         while True:
             try:
                 print(f"Player {Game.get_cur_player()} please enter index to place piece")
-                idx = get_input(int, "index")
+                print(Game)
+                idx = get_input("Input index to drop: ", int, "index")
                 Game.place(idx)
                 break
             except Exception as e:
-                print(e)
+                print("\033[2J\033[H", end="") # Clear terminal
+                print(f"\033[91m{e}\033[0m")
                 continue
+
+        # Check for win
+
+        Game.check()
+
 
 
 if __name__ == "__main__":

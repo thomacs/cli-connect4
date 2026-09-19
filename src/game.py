@@ -19,14 +19,19 @@ class Cell():
         
 
     def __str__(self):
-        rep = " "
+        rep = "■"
         match self.state:
             case 1:
-                rep = "X"
+                rep = "\033[91m■\033[0m"
             case 2:
-                rep = "O"
+                rep = "\033[92m■\033[0m"
+            case 3:
+                rep = "\033[93m■\033[0m"
+            case 4:
+                rep = "\033[94m■\033[0m"
 
-        return f"[{rep}]"
+
+        return f" {rep}"
 
 class Board():
     """A board is an object with a collection of cells in a grid, with width and height"""
@@ -51,6 +56,7 @@ class Board():
 class C4Game():
     """A C4 game contains a Board as well as other game related metadata, helper functions, and restrictions"""
     def __init__(self, width: int = 7, height: int = 6, max_players: int = 2):
+        self.max_players: int = max_players
         self.current_player: int = 1
         self.board: Board = Board(width, height)
 
@@ -58,7 +64,7 @@ class C4Game():
 
         # Check if legal
         if width_idx >= self.board.width:
-            raise ValueError(f"Input: '{width_idx}' exceeds board width '{self.board.width}'")
+            raise ValueError(f"Input: '{width_idx}' exceeds board width '{self.board.width - 1}'")
 
         # Check if column is full
         if len(list(filter(lambda cell: cell.state != 0, self.board.state[width_idx]))) == self.board.height:
@@ -70,13 +76,15 @@ class C4Game():
                 cell.set_state(self.get_cur_player())
                 break
 
-        print(self.board)
-        self.current_player = self.current_player % 2 + 1
+        print(self)
+        self.current_player = self.current_player % self.max_players + 1
 
     def get_cur_player(self) -> int:
         return self.current_player
 
 
     def __str__(self) -> str:
-        raise NotImplementedError()
-        pass
+        out = str(self.board)
+        out += " " 
+        out += " ".join(map(str, range(self.board.width)))
+        return out
