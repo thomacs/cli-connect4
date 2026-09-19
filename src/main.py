@@ -12,7 +12,7 @@ def main():
     if custom:
         # Initialize game with given parameters
         print("\033[2J\033[H", end="") # Clear terminal
-        width = get_input("Input board height: ", int, "width")
+        width = get_input("Input board width: ", int, "width")
         height = get_input("Input board height: ", int, "height")
         Game = C4Game(width, height)
     else:
@@ -26,7 +26,7 @@ def main():
     
         while True:
             try:
-                print(f"Player {Game.get_cur_player()} please enter index to place piece")
+                print(f"Player {Game.get_cur_player()} please enter index to place piece {Game.get_piece(Game.get_cur_player())}")
                 print(Game)
                 idx = get_input("Input index to drop: ", int, "index")
                 Game.place(idx)
@@ -37,10 +37,11 @@ def main():
                 continue
 
         # Check for win
+        won = Game.check()
+        if won:
+            break
 
-        Game.check()
-
-
+    print(f"Player {won} won!")
 
 if __name__ == "__main__":
     main()

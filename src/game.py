@@ -16,19 +16,10 @@ class Cell():
 
     def set_state(self, player_id: int):
         self.state = player_id
-        
 
     def __str__(self):
-        rep = "■"
-        match self.state:
-            case 1:
-                rep = "\033[91m■\033[0m"
-            case 2:
-                rep = "\033[92m■\033[0m"
-            case 3:
-                rep = "\033[93m■\033[0m"
-            case 4:
-                rep = "\033[94m■\033[0m"
+        rep = f"\033[9{self.state % 8}m■\033[0m"
+
 
 
         return f" {rep}"
@@ -59,6 +50,7 @@ class C4Game():
         self.max_players: int = max_players
         self.current_player: int = 1
         self.board: Board = Board(width, height)
+        self.win_condition: int = 3
 
     def place(self, width_idx: int):
 
@@ -82,9 +74,61 @@ class C4Game():
     def get_cur_player(self) -> int:
         return self.current_player
 
+    def check(self) -> int:
+        """Check returns player_id if player won else 0"""
+
+        # Check vertical wins
+        cur_player: int = 0
+        in_row: int = 0
+
+        for w in range(self.board.width):
+            for h in range(self.board.height):
+                if self.board.get_cell(w, h).state == 0:
+                    in_row = 0
+                elif self.board.get_cell(w, h).state == cur_player:
+                    in_row += 1
+                else:
+                    cur_player = self.board.get_cell(w, h).state
+                    in_row = 1
+
+                if in_row >= self.win_condition:
+                    return cur_player
+            cur_player = 0
+            in_row = 0
+
+
+        # Check horizontal wins
+        cur_player = 0
+        in_row = 0
+
+        for h in range(self.board.height):
+            for w in range(self.board.width):
+
+                if self.board.get_cell(w, h).state == 0:
+                    in_row = 0
+                elif self.board.get_cell(w, h).state == cur_player:
+                    in_row += 1
+                else:
+                    cur_player = self.board.get_cell(w, h).state
+                    in_row = 1
+
+                if in_row >= self.win_condition:
+                    return cur_player
+            cur_player = 0
+            in_row = 0
+
+        return 0
+
+    def get_piece(self, player_id: int) -> str:
+        return f"\033[9{player_id % 8}m■\033[0m"
+
 
     def __str__(self) -> str:
         out = str(self.board)
         out += " " 
-        out += " ".join(map(str, range(self.board.width)))
+        for ten in range(((self.board.height - 1) // 10) + 1):
+            nums = (" ".join(map(str, range(min(10, self.board.width - ten * 10)))))
+            out += f"\033[9{ten % 8}m{nums} "
+        
+        out += f"\033[0m"
         return out
