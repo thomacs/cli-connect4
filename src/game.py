@@ -90,6 +90,7 @@ class C4Game():
 
                 if cur_cell.state == 0:
                     in_row = 0
+                    continue
                 elif cur_cell.state == cur_player:
                     in_row += 1
                 else:
@@ -113,6 +114,7 @@ class C4Game():
 
                 if cur_cell.state == 0:
                     in_row = 0
+                    continue
                 elif cur_cell.state == cur_player:
                     in_row += 1
                 else:
@@ -133,12 +135,13 @@ class C4Game():
             for h in range(self.board.height):
                 # Skip outside width
                 if w + h >= self.board.width:
-                    continue
+                    break
 
                 cur_cell = self.board.get_cell(w + h, h)
 
                 if cur_cell.state == 0:
                     in_row = 0
+                    continue
                 elif cur_cell.state == cur_player:
                     in_row += 1
                 else:
@@ -160,12 +163,13 @@ class C4Game():
             for h in range(self.board.height):
                 # Skip outside width
                 if w - h < 0:
-                    continue
+                    break
 
                 cur_cell = self.board.get_cell(w - h, h)
 
                 if cur_cell.state == 0:
                     in_row = 0
+                    continue
                 elif cur_cell.state == cur_player:
                     in_row += 1
                 else:
