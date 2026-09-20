@@ -1,7 +1,6 @@
 name: Build Windows executable
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
