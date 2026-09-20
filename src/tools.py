@@ -6,6 +6,8 @@ def get_input(prompt: str, desired_type: type, variable: str = ""):
     while True:
         try:
             in_str: str = input()   
+            if in_str == "q":
+                exit()
             out = desired_type(in_str)
             break
         except ValueError:

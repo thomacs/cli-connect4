@@ -46,13 +46,14 @@ class Board():
 
 class C4Game():
     """A C4 game contains a Board as well as other game related metadata, helper functions, and restrictions"""
-    def __init__(self, width: int = 7, height: int = 6, max_players: int = 2):
+    def __init__(self, width: int = 7, height: int = 6, max_players: int = 2, win_condition: int = 4):
         self.max_players: int = max_players
         self.current_player: int = 1
         self.board: Board = Board(width, height)
-        self.win_condition: int = 3
+        self.win_condition: int = win_condition
 
     def place(self, width_idx: int):
+        """Try to drop a piece in given column for current player"""
 
         # Check if legal
         if width_idx >= self.board.width:
@@ -74,6 +75,7 @@ class C4Game():
     def get_cur_player(self) -> int:
         return self.current_player
 
+
     def check(self) -> int:
         """Check returns player_id if player won else 0"""
 
@@ -83,12 +85,15 @@ class C4Game():
 
         for w in range(self.board.width):
             for h in range(self.board.height):
-                if self.board.get_cell(w, h).state == 0:
+
+                cur_cell = self.board.get_cell(w, h)
+
+                if cur_cell.state == 0:
                     in_row = 0
-                elif self.board.get_cell(w, h).state == cur_player:
+                elif cur_cell.state == cur_player:
                     in_row += 1
                 else:
-                    cur_player = self.board.get_cell(w, h).state
+                    cur_player = cur_cell.state
                     in_row = 1
 
                 if in_row >= self.win_condition:
@@ -104,12 +109,14 @@ class C4Game():
         for h in range(self.board.height):
             for w in range(self.board.width):
 
-                if self.board.get_cell(w, h).state == 0:
+                cur_cell = self.board.get_cell(w, h)
+
+                if cur_cell.state == 0:
                     in_row = 0
-                elif self.board.get_cell(w, h).state == cur_player:
+                elif cur_cell.state == cur_player:
                     in_row += 1
                 else:
-                    cur_player = self.board.get_cell(w, h).state
+                    cur_player = cur_cell.state
                     in_row = 1
 
                 if in_row >= self.win_condition:
@@ -117,6 +124,58 @@ class C4Game():
             cur_player = 0
             in_row = 0
 
+        # Check diagonal wins /
+        cur_player = 0
+        in_row = 0
+
+
+        for w in range(self.board.width):
+            for h in range(self.board.height):
+                # Skip outside width
+                if w + h >= self.board.width:
+                    continue
+
+                cur_cell = self.board.get_cell(w + h, h)
+
+                if cur_cell.state == 0:
+                    in_row = 0
+                elif cur_cell.state == cur_player:
+                    in_row += 1
+                else:
+                    cur_player = cur_cell.state
+                    in_row = 1
+
+                if in_row >= self.win_condition:
+                    return cur_player
+            cur_player = 0
+            in_row = 0
+
+        
+        # Check diagonal wins \
+        cur_player = 0
+        in_row = 0
+
+
+        for w in range(self.board.width):
+            for h in range(self.board.height):
+                # Skip outside width
+                if w - h < 0:
+                    continue
+
+                cur_cell = self.board.get_cell(w - h, h)
+
+                if cur_cell.state == 0:
+                    in_row = 0
+                elif cur_cell.state == cur_player:
+                    in_row += 1
+                else:
+                    cur_player = cur_cell.state
+                    in_row = 1
+
+                if in_row >= self.win_condition:
+                    return cur_player
+            cur_player = 0
+            in_row = 0
         return 0
 
     def get_piece(self, player_id: int) -> str:
@@ -126,7 +185,7 @@ class C4Game():
     def __str__(self) -> str:
         out = str(self.board)
         out += " " 
-        for ten in range(((self.board.height - 1) // 10) + 1):
+        for ten in range(((self.board.width - 1) // 10) + 1):
             nums = (" ".join(map(str, range(min(10, self.board.width - ten * 10)))))
             out += f"\033[9{ten % 8}m{nums} "
         
